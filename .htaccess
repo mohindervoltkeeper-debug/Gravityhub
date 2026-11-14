@@ -1,6 +1,13 @@
 Options -Indexes
 
-<FilesMatch "(?i)(^\.|\.bak$|\.sql$|\.md$|\.docx$|\.pdf$)">
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+<FilesMatch "(?i)(^\.|^config(\.example)?\.php$|\.bak$|\.sql$|\.md$|\.docx$|\.pdf$)">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>

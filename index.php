@@ -2,7 +2,7 @@
 // Page-specific settings
 $page_title = 'EnergyHub Services | Electrical & Technical Support';
 $page_description = 'Technical services for electrical equipment and energy-monitoring devices, including fault diagnosis, installation, maintenance, and component support.';
-$page_social_image = 'assets/images/photo1.1.png';
+$page_social_image = 'assets/images/photo1.1.webp';
 $body_class = 'page-home';
 
 // Load shared service data
@@ -16,7 +16,7 @@ include 'includes/header.php';
 <!-- Section A: Hero -->
 <section class="hero" id="home">
     <div class="hero-background" aria-hidden="true">
-        <img class="hero-slide is-active" src="assets/images/photo1.1.png" srcset="<?php echo webp_image_srcset('assets/images/photo1.1.png'); ?>" alt="" aria-hidden="false" fetchpriority="high" decoding="async"
+        <img class="hero-slide is-active" src="assets/images/photo1.1.webp" srcset="<?php echo webp_image_srcset('assets/images/photo1.1.webp'); ?>" alt="" aria-hidden="false" fetchpriority="high" decoding="async"
              data-eyebrow="Electrical &amp; technical services"
              data-title="Make sense of"
              data-highlight="the technical issue."
@@ -24,7 +24,7 @@ include 'includes/header.php';
              data-highlight-one="Fault assessment"
              data-highlight-two="Device support"
              data-highlight-three="Clear next steps">
-        <img class="hero-slide" src="assets/images/photo1.2.png" srcset="<?php echo webp_image_srcset('assets/images/photo1.2.png'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async"
+        <img class="hero-slide" src="assets/images/photo1.2.webp" srcset="<?php echo webp_image_srcset('assets/images/photo1.2.webp'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async"
              data-eyebrow="Equipment installation &amp; commissioning"
              data-title="Get equipment"
              data-highlight="set up with care."
@@ -32,7 +32,7 @@ include 'includes/header.php';
              data-highlight-one="Installation planning"
              data-highlight-two="Configuration support"
              data-highlight-three="Operational checks">
-        <img class="hero-slide" src="assets/images/photo1.3.png" srcset="<?php echo webp_image_srcset('assets/images/photo1.3.png'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async"
+        <img class="hero-slide" src="assets/images/photo1.3.webp" srcset="<?php echo webp_image_srcset('assets/images/photo1.3.webp'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async"
              data-eyebrow="On-site &amp; project support"
              data-title="Technical support"
              data-highlight="for real-world sites."
@@ -211,7 +211,7 @@ include 'includes/header.php';
     <div class="container">
         <div class="featured-grid featured-split">
             <div class="featured-visual reveal apple-blend-dark">
-                <img src="assets/images/photo2.png" srcset="<?php echo webp_image_srcset('assets/images/photo2.png'); ?>" alt="Technical inspection of an electronic equipment component" loading="lazy" decoding="async">
+                <img src="assets/images/photo2.webp" srcset="<?php echo webp_image_srcset('assets/images/photo2.webp'); ?>" alt="Technical inspection of an electronic equipment component" loading="lazy" decoding="async">
                 <div class="featured-stat">
                     <strong>Start with the details</strong>
                     <span>Equipment details help us review the reported fault</span>
@@ -243,7 +243,7 @@ include 'includes/header.php';
             <div class="about-panel-body">
                 <div class="about-panel-text">
                     <div class="about-panel-image">
-                        <img src="assets/images/photo7.png" srcset="<?php echo webp_image_srcset('assets/images/photo7.png'); ?>" alt="EnergyHub company overview" loading="lazy" decoding="async">
+                        <img src="assets/images/photo7.webp" srcset="<?php echo webp_image_srcset('assets/images/photo7.webp'); ?>" alt="EnergyHub company overview" loading="lazy" decoding="async">
                     </div>
                     <p><?php echo htmlspecialchars($about['intro']); ?></p>
                     <a href="about.php" class="btn btn-outline">Learn About Us</a>
@@ -312,7 +312,7 @@ include 'includes/header.php';
 <!-- Section I: Final CTA -->
 <section class="final-cta-section" id="cta">
     <div class="final-cta-bg" aria-hidden="true">
-        <img src="assets/images/photo11.1.png" srcset="<?php echo webp_image_srcset('assets/images/photo11.1.png'); ?>" alt="" loading="lazy" decoding="async">
+        <img src="assets/images/photo11.1.webp" srcset="<?php echo webp_image_srcset('assets/images/photo11.1.webp'); ?>" alt="" loading="lazy" decoding="async">
     </div>
     <div class="container final-cta-content reveal">
         <h2>Not sure which support you need?</h2>

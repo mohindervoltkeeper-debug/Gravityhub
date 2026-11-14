@@ -31,7 +31,7 @@ $services = [
         'next'    => 'The team reviews the information and discusses whether further checks, a site visit, or another service may be suitable.',
         'note'    => 'Diagnosis and any further work depend on the information available and the assessment required.',
         'icon'    => 'search',
-        'image'   => 'photo2.png',
+        'image'   => 'photo2.webp',
         'cta'     => 'Request a Diagnosis',
     ],
     [
@@ -44,7 +44,7 @@ $services = [
         'next'    => 'The team reviews the requirements and confirms the proposed scope, site arrangements, and availability before work is scheduled.',
         'note'    => 'Site work, commissioning checks, scheduling, and availability are confirmed case by case.',
         'icon'    => 'tools',
-        'image'   => 'photo4.png',
+        'image'   => 'photo4.webp',
         'cta'     => 'Request Installation',
     ],
     [
@@ -57,7 +57,7 @@ $services = [
         'next'    => 'The team reviews the requested checks and confirms a suitable scope and availability. Any findings or further work can then be discussed.',
         'note'    => 'Maintenance can help identify issues; it does not guarantee uninterrupted operation or prevent every fault.',
         'icon'    => 'activity',
-        'image'   => 'photo5.png',
+        'image'   => 'photo5.webp',
         'cta'     => 'Request Maintenance',
     ],
     [
@@ -70,7 +70,7 @@ $services = [
         'next'    => 'The team reviews feasibility and discusses possible options, compatibility, sourcing, and applicable costs before you decide how to proceed.',
         'note'    => 'Repair feasibility, component compatibility, sourcing, cost, and availability must be confirmed before work proceeds. EnergyHub does not promise ready stock or instant delivery.',
         'icon'    => 'cpu',
-        'image'   => 'photo10.png',
+        'image'   => 'photo10.webp',
         'cta'     => 'Ask About Components',
     ],
     [
@@ -83,7 +83,7 @@ $services = [
         'next'    => 'The team reviews the location and request, then confirms whether a visit is possible and what the proposed scope may involve.',
         'note'    => 'Site visits depend on location, scheduling, work scope, and service availability; they are not guaranteed until confirmed.',
         'icon'    => 'geo-alt',
-        'image'   => 'photo9.png',
+        'image'   => 'photo9.webp',
         'cta'     => 'Ask About a Site Visit',
     ],
     [
@@ -96,7 +96,7 @@ $services = [
         'next'    => 'The team reviews feasibility and discusses a possible scope, required materials, arrangements, and applicable costs for your approval.',
         'note'    => 'Custom work and material sourcing are subject to assessment, feasibility, availability, and customer approval of applicable costs.',
         'icon'    => 'sliders',
-        'image'   => 'photo8.png',
+        'image'   => 'photo8.webp',
         'cta'     => 'Describe Your Task',
     ],
 ];

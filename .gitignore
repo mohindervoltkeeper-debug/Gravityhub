@@ -17,4 +17,6 @@ Thumbs.db
 
 # Environment
 .env
+/config.php
 /includes/config.local.php
+gravityhub_backup.sql

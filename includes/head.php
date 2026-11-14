@@ -66,8 +66,7 @@ $organization_schema = [
     <?php endif; ?>
 
     <link rel="icon" type="image/webp" sizes="512x512" href="assets/images/gravity-hub-icon.webp?v=<?php echo filemtime(__DIR__ . '/../assets/images/gravity-hub-icon.webp'); ?>">
-    <link rel="icon" type="image/png" sizes="512x512" href="assets/images/gravity-hub-icon.png?v=<?php echo filemtime(__DIR__ . '/../assets/images/gravity-hub-icon.png'); ?>">
-    <link rel="apple-touch-icon" href="assets/images/gravity-hub-icon.png?v=<?php echo filemtime(__DIR__ . '/../assets/images/gravity-hub-icon.png'); ?>">
+    <link rel="apple-touch-icon" href="assets/images/gravity-hub-icon.webp?v=<?php echo filemtime(__DIR__ . '/../assets/images/gravity-hub-icon.webp'); ?>">
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <!-- Bootstrap 5 CSS (CDN) -->

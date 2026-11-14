@@ -25,7 +25,7 @@ EnergyHub does not promise ready-stock products or instant parts delivery. Scope
 - Editorial blog page with three practical equipment-support guides
 - Service detail sections with matching image, anchor, request link, required information, and availability notes
 - Footer app download area with inactive Android and iOS placeholders
-- Contact and service-request forms with server-side validation and MySQL persistence
+- Contact and service-request forms with server-side validation and PDO persistence
 - Responsive WebP image delivery with PNG fallback, lazy-loaded below-the-fold media, and a compressed hero video
 - Search/social metadata and Organization structured data on all pages
 - Back-to-top button
@@ -48,11 +48,14 @@ energyhubwebsite/
 │   ├── header.php         # Sticky navigation + logo
 │   ├── footer.php         # Footer with links + dynamic year
 │   ├── service-data.php     # Central editable service data
-│   ├── database.php         # PDO MySQL connection
+│   ├── database.php         # PDO connection for MySQL/MariaDB or PostgreSQL
 │   └── form-handler.php     # CSRF protection, validation, and form inserts
 ├── database/
-│   └── schema.sql           # MySQL database and form tables
+│   └── schema.sql           # MySQL/MariaDB form tables and indexes
 ├── .htaccess                # Apache directory, include, and file-access rules
+├── config.example.php       # Safe database configuration template
+├── config.php               # Private database configuration; do not commit
+├── HOSTINGER_DEPLOYMENT.md  # Hostinger setup guide
 ├── assets/
 │   ├── css/style.css      # All styles (CSS variables, components, responsive)
 │   ├── js/main.js         # All interactions (menu, scroll, FAQ, validation)
@@ -72,25 +75,25 @@ energyhubwebsite/
 | Contact Us | `contact.php` | Contact details, message form, and service-location placeholder |
 | Request Service | `request-service.php` | Server-validated service request form |
 
-## Image Placeholders
+## Image Assets
 
-Add your own images to `assets/images/` using the exact filenames:
+The site includes optimized WebP images and a compressed hero video:
 
 | File | Section |
 |------|---------|
-| `photo1.1.png`, `photo1.2.png`, `photo1.3.png` | Homepage hero slideshow images (wide photos with open space for text) |
-| `photo2.png` | Fault diagnosis |
-| `photo3.png` | Reserved for future use |
-| `photo4.png` | Equipment installation |
-| `photo5.png` | Preventive maintenance |
-| `photo6.mp4` | Why Choose Us video |
-| `photo7.png` | About Us |
-| `photo8.png` | Custom technical tasks |
-| `photo9.png` | On-site technical assistance / final CTA |
-| `photo10.png` | Component support |
-| `photo11.1.png` | Contact and final CTA backgrounds |
-| `photo12.png` | Request a Service hero background |
-| `photo13.png` | Blog journal masthead background |
+| `photo1.1.webp`, `photo1.2.webp`, `photo1.3.webp` | Homepage and page hero slideshow |
+| `photo2.webp` | Fault diagnosis |
+| `photo4.webp` | Equipment installation |
+| `photo5.webp` | Preventive maintenance |
+| `photo6-optimized.mp4` | Why Choose Us video |
+| `photo7.webp` | About Us |
+| `photo8.webp` | Custom technical tasks |
+| `photo9.webp` | On-site technical assistance / final CTA |
+| `photo10.webp` | Component support |
+| `photo11.1.webp`, `photo11.webp` | Contact and final CTA backgrounds |
+| `photo12.webp` | Request a Service hero background |
+| `photo13.webp` | Blog journal masthead background |
+| `gravity-hub-logo.webp`, `gravity-hub-icon.webp` | Site logo and icon |
 
 ## How to Run Locally
 
@@ -100,8 +103,8 @@ This is a PHP project. You need PHP installed to run it.
 
 From the project root:
 
-```bash
-php -S localhost:8000
+```powershell
+D:\xampp\php\php.exe -S localhost:8000
 ```
 
 Then open: http://localhost:8000/index.php
@@ -112,32 +115,24 @@ Place the project folder in your web server's document root (e.g., `htdocs`) and
 
 ## Database and Form Setup
 
-The Contact Us and Request a Service forms save submissions to MySQL/MariaDB using PDO prepared statements and send email notifications to `gravityhubautomation@gmail.com` through PHP's configured mail transport. They validate input on the server and use CSRF tokens. If notification delivery cannot be handed to the mail transport, the submission remains saved and the form tells the customer to contact the email address directly.
+The Contact Us and Request a Service forms save submissions in `contact_messages` and `service_requests` using PDO prepared statements. The connection supports MySQL/MariaDB and PostgreSQL; Hostinger shared hosting commonly provides MySQL/MariaDB, but confirm the database type and connection details in your hosting panel. `database/schema.sql` targets MySQL/MariaDB. The current backup file is empty, so it does not contain data to migrate.
 
-Set `ENERGYHUB_SITE_URL` to the production HTTPS site root (for example, `https://www.example.com`) so pages emit correct canonical and social-sharing URLs. Do not set it to `localhost`. The public domain is needed before a production sitemap and search-engine registration can be finalized.
+The forms validate input on the server, use CSRF tokens, and send email notifications through PHP's configured mail transport. A successful database save remains recorded even if notification delivery is unavailable.
 
-Configure PHP mail delivery on the hosting server before accepting live submissions. For XAMPP, configure its Sendmail settings to use a mail provider (for Gmail SMTP, use an app password, not the account password). Optionally set `ENERGYHUB_NOTIFICATION_EMAIL` to override the notification recipient and `ENERGYHUB_MAIL_FROM` to a sender address accepted by your mail provider. Do not commit mail credentials; keep them in the server's private mail configuration.
+Set the connection values in the root `config.php`. For a fresh setup, copy `config.example.php` to `config.php` and replace the example values with the database details shown by your provider. Keep `config.php` private; it is ignored by Git and direct HTTP access is denied by `.htaccess`. Do not put database credentials in frontend files or commit them.
 
-1. Create/import the database schema with the MySQL command line or phpMyAdmin:
-
-   ```bash
-   mysql -u root -p < database/schema.sql
-   ```
-
-2. Create a dedicated runtime database user after importing the schema. For example, run the following as a database administrator, replacing the example password with a strong unique secret:
+1. Create a MySQL/MariaDB database and database user in your hosting control panel, and grant that user access to the database.
+2. Import `database/schema.sql` using phpMyAdmin or the hosting database import tool. It creates the two form tables if missing; it does not drop tables or delete existing data.
+3. Set `driver`, `host`, `port`, `database`, `username`, and `password` in `config.php`. Typical MySQL values use driver `mysql` and port `3306`, but use the exact values from your host.
+4. Ensure the PHP `pdo_mysql` extension is enabled. For XAMPP, check `D:\xampp\php\php.ini` and restart Apache after enabling it. Check with `D:\xampp\php\php.exe -m | findstr /I pdo_mysql`.
+5. Submit a contact message and service request, then verify both records in phpMyAdmin:
 
    ```sql
-   CREATE USER 'energyhub_app'@'localhost' IDENTIFIED BY 'replace-with-a-strong-unique-password';
-   GRANT INSERT ON energyhub.contact_messages TO 'energyhub_app'@'localhost';
-   GRANT INSERT ON energyhub.service_requests TO 'energyhub_app'@'localhost';
+   SELECT id, name, email, created_at FROM contact_messages ORDER BY id DESC LIMIT 5;
+   SELECT id, customer_name, service_type, status, created_at FROM service_requests ORDER BY id DESC LIMIT 5;
    ```
 
-3. Copy `includes/config.local.example.php` to `includes/config.local.php` and enter the database host, port, database name, runtime user, and password. The local config is ignored by Git. Alternatively, set `ENERGYHUB_DB_HOST`, `ENERGYHUB_DB_PORT`, `ENERGYHUB_DB_NAME`, `ENERGYHUB_DB_USER`, and `ENERGYHUB_DB_PASSWORD` in the PHP/web-server environment.
-4. Ensure PHP has `pdo_mysql` enabled and the web-server account can read the application files.
-5. Submit a test contact message and service request, then verify the `contact_messages` and `service_requests` tables in phpMyAdmin or your database console.
-6. On production, use HTTPS and do not upload or commit `config.local.php`. The root `.htaccess` rules protect project documentation and database files on Apache; configure equivalent access restrictions if using Nginx or another server.
-
-Database connection errors are written to the PHP error log; the form displays a generic save error without exposing credentials or server details.
+Database connection errors are written to the PHP error log; the form displays a generic save error without exposing credentials or server details. PostgreSQL connections are supported by the connection code, but this repository does not currently include a PostgreSQL schema.
 
 ## What Is Functional Now
 
@@ -151,13 +146,13 @@ Database connection errors are written to the PHP error log; the form displays a
 - Back-to-top button
 - Scroll-reveal animations
 - Client-side and server-side form validation on contact and request-service pages
-- CSRF-protected contact and service-request submissions stored in MySQL/MariaDB
+- CSRF-protected contact and service-request submissions stored in MySQL/MariaDB or PostgreSQL
 - Dynamic footer year
 - Missing-image-safe containers
 
 ## Remaining Backend Work
 
-- Configure database credentials on the target server and import `database/schema.sql` before accepting submissions.
+- Configure database details in `config.php` and import `database/schema.sql` before accepting submissions.
 - An authenticated admin dashboard for reviewing submissions is not included.
 
 ## Design System
@@ -172,5 +167,4 @@ Database connection errors are written to the PHP error log; the form displays a
 
 ## Publishing Notes
 
-The contact email is `gravityhubautomation@gmail.com`; configure and test the hosting server's mail transport before publishing. Address and business hours are placeholders and must be confirmed before publishing. The displayed phone and WhatsApp number are retained from the existing project. Confirm service coverage, site availability, material sourcing, costs, and timing for each request before committing to work.#   G r a v i t y h u b  
- 
+The contact email is `gravityhubautomation@gmail.com`; configure and test the hosting server's mail transport before publishing. Address and business hours are placeholders and must be confirmed before publishing. The displayed phone and WhatsApp number are retained from the existing project. Confirm service coverage, site availability, material sourcing, costs, and timing for each request before committing to work.

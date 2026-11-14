@@ -6,7 +6,7 @@ $blog_posts = [
         'category_slug' => 'service-preparation',
         'title' => 'What to share when requesting technical support',
         'excerpt' => 'A few clear details about your equipment, symptoms, and site can make the first service conversation more useful.',
-        'image' => 'photo1.2.png',
+        'image' => 'photo1.2.webp',
         'image_alt' => 'Technician reviewing an energy-monitoring device and its readings',
         'published' => '2026-10-28',
         'author' => 'EnergyHub Editorial',
@@ -34,7 +34,7 @@ $blog_posts = [
         'category_slug' => 'energy-monitoring',
         'title' => 'A simple guide to reviewing energy-monitor readings',
         'excerpt' => 'Use consistent time periods, operating context, and device details to describe what the readings show.',
-        'image' => 'photo7.png',
+        'image' => 'photo7.webp',
         'image_alt' => 'Energy-use charts displayed in a monitoring workspace',
         'published' => '2026-10-21',
         'author' => 'EnergyHub Editorial',
@@ -61,7 +61,7 @@ $blog_posts = [
         'category_slug' => 'maintenance',
         'title' => 'Keep a useful equipment maintenance record',
         'excerpt' => 'A simple record of models, service dates, and observations can make future equipment reviews easier.',
-        'image' => 'photo5.png',
+        'image' => 'photo5.webp',
         'image_alt' => 'Technician reviewing equipment as part of a maintenance check',
         'published' => '2026-10-14',
         'author' => 'EnergyHub Editorial',
@@ -118,7 +118,7 @@ if ($active_post !== null) {
     $page_description = 'Practical guides to preparing for technical support, understanding energy-monitor readings, and keeping useful equipment maintenance records.';
     $page_social_image = $featured_post !== null
         ? 'assets/images/' . $featured_post['image']
-        : 'assets/images/photo1.1.png';
+        : 'assets/images/photo1.1.webp';
 }
 $body_class = 'page-blog';
 

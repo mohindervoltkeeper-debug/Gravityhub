@@ -1,7 +1,7 @@
 <?php
 $page_title = 'Contact Us | EnergyHub Services';
 $page_description = 'Contact EnergyHub Services for device repair, installation, and technical support.';
-$page_social_image = 'assets/images/photo11.1.png';
+$page_social_image = 'assets/images/photo11.1.webp';
 $body_class = 'page-contact';
 
 require_once __DIR__ . '/includes/service-data.php';
@@ -29,7 +29,7 @@ include 'includes/header.php';
 <!-- Page Hero -->
 <section class="page-hero">
     <div class="hero-background" aria-hidden="true">
-        <img class="hero-slide is-active" src="assets/images/photo11.1.png" srcset="<?php echo webp_image_srcset('assets/images/photo11.1.png'); ?>" alt="" aria-hidden="false" fetchpriority="high" decoding="async">
+        <img class="hero-slide is-active" src="assets/images/photo11.1.webp" srcset="<?php echo webp_image_srcset('assets/images/photo11.1.webp'); ?>" alt="" aria-hidden="false" fetchpriority="high" decoding="async">
     </div>
     <div class="hero-bg-overlay" aria-hidden="true"></div>
     <div class="container hero-container">

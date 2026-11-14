@@ -1893,7 +1893,7 @@ select.form-control {
   border-bottom: 1px solid var(--blog-line);
   background:
     linear-gradient(90deg, rgba(6, 10, 18, 0.94) 0%, rgba(6, 10, 18, 0.78) 58%, rgba(6, 10, 18, 0.52) 100%),
-    url("../images/photo13.png") center 48% / cover no-repeat,
+    url("../images/photo13.webp") center 48% / cover no-repeat,
     #080d16;
 }
 
@@ -5874,3 +5874,4 @@ body {
     object-fit: cover;
   }
 }
+

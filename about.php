@@ -1,7 +1,7 @@
 <?php
 $page_title = 'About Us | EnergyHub Services';
 $page_description = 'Learn about EnergyHub Services and its practical technical support for equipment, energy-monitoring devices, and related tasks.';
-$page_social_image = 'assets/images/photo7.png';
+$page_social_image = 'assets/images/photo7.webp';
 $body_class = 'page-about';
 
 require_once __DIR__ . '/includes/service-data.php';
@@ -14,9 +14,9 @@ include 'includes/header.php';
 <!-- Page Hero -->
 <section class="page-hero">
     <div class="hero-background" aria-hidden="true">
-        <img class="hero-slide is-active" src="assets/images/photo1.1.png" srcset="<?php echo webp_image_srcset('assets/images/photo1.1.png'); ?>" alt="" aria-hidden="false" fetchpriority="high" decoding="async">
-        <img class="hero-slide" src="assets/images/photo1.2.png" srcset="<?php echo webp_image_srcset('assets/images/photo1.2.png'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async">
-        <img class="hero-slide" src="assets/images/photo1.3.png" srcset="<?php echo webp_image_srcset('assets/images/photo1.3.png'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <img class="hero-slide is-active" src="assets/images/photo1.1.webp" srcset="<?php echo webp_image_srcset('assets/images/photo1.1.webp'); ?>" alt="" aria-hidden="false" fetchpriority="high" decoding="async">
+        <img class="hero-slide" src="assets/images/photo1.2.webp" srcset="<?php echo webp_image_srcset('assets/images/photo1.2.webp'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async">
+        <img class="hero-slide" src="assets/images/photo1.3.webp" srcset="<?php echo webp_image_srcset('assets/images/photo1.3.webp'); ?>" alt="" aria-hidden="true" loading="lazy" decoding="async">
     </div>
     <div class="hero-bg-overlay" aria-hidden="true"></div>
     <div class="container hero-container">
@@ -100,7 +100,7 @@ include 'includes/header.php';
                 <p>Support may include troubleshooting, installation, maintenance, component assessment, on-site assistance where available, or a custom technical task. A site visit, repair, or material sourcing is not assumed until feasibility, availability, scope, and applicable costs have been reviewed with you.</p>
             </div>
             <div class="approach-image apple-blend-light">
-                <img src="assets/images/photo7.png" srcset="<?php echo webp_image_srcset('assets/images/photo7.png'); ?>" alt="Energy-monitoring dashboards in a modern technical workspace" loading="lazy" decoding="async">
+                <img src="assets/images/photo7.webp" srcset="<?php echo webp_image_srcset('assets/images/photo7.webp'); ?>" alt="Energy-monitoring dashboards in a modern technical workspace" loading="lazy" decoding="async">
             </div>
         </div>
     </div>
@@ -130,7 +130,7 @@ include 'includes/header.php';
 <!-- Contact CTA -->
 <section class="final-cta-section" id="cta">
     <div class="final-cta-bg" aria-hidden="true">
-        <img src="assets/images/photo11.1.png" srcset="<?php echo webp_image_srcset('assets/images/photo11.1.png'); ?>" alt="" loading="lazy" decoding="async">
+        <img src="assets/images/photo11.1.webp" srcset="<?php echo webp_image_srcset('assets/images/photo11.1.webp'); ?>" alt="" loading="lazy" decoding="async">
     </div>
     <div class="container final-cta-content reveal">
         <h2>Have a technical requirement?</h2>

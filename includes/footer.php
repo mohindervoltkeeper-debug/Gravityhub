@@ -3,7 +3,7 @@
         <div class="footer-grid">
             <!-- Company Info -->
             <div class="footer-col footer-about">
-                <img class="site-logo footer-logo" src="assets/images/gravity-hub-logo.png" srcset="<?php echo webp_image_srcset('assets/images/gravity-hub-logo.png'); ?>" alt="Gravity Hub" width="1520" height="652" loading="lazy" decoding="async">
+                <img class="site-logo footer-logo" src="assets/images/gravity-hub-logo.webp" srcset="<?php echo webp_image_srcset('assets/images/gravity-hub-logo.webp'); ?>" alt="Gravity Hub" width="1520" height="652" loading="lazy" decoding="async">
                 <p class="footer-desc">Practical technical services for electrical equipment, energy-monitoring devices, installation, maintenance, and related tasks.</p>
                 <div class="footer-social">
                     <a href="#!" aria-label="Facebook"><i class="bi bi-facebook"></i></a>

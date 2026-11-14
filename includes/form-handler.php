@@ -19,7 +19,11 @@ function start_form_session(): void
         session_save_path($fallbackSessionPath);
     }
 
-    $isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    $isSecure = !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off';
+    if (!$isSecure && isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+        $forwardedProtocols = explode(',', (string) $_SERVER['HTTP_X_FORWARDED_PROTO']);
+        $isSecure = strtolower(trim($forwardedProtocols[0])) === 'https';
+    }
     session_set_cookie_params([
         'httponly' => true,
         'secure' => $isSecure,
@@ -50,14 +54,31 @@ function create_form_state(): array
     return $state;
 }
 
-function read_form_value(array $input, string $key, int $maxLength): string
+function read_form_value(array $input, string $key): string
 {
     $value = $input[$key] ?? '';
     if (!is_string($value) && !is_numeric($value)) {
         return '';
     }
 
-    return trim(substr((string) $value, 0, $maxLength));
+    return trim((string) $value);
+}
+
+function form_values_exceed_limits(array $values, array $limits): bool
+{
+    foreach ($limits as $key => $maxLength) {
+        $value = $values[$key] ?? '';
+        if (preg_match('//u', $value) !== 1) {
+            return true;
+        }
+
+        $length = function_exists('mb_strlen') ? mb_strlen($value, 'UTF-8') : strlen($value);
+        if ($length > $maxLength) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function validate_form_csrf(array $input): bool
@@ -149,11 +170,11 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
 
     if ($type === 'contact') {
         $state['values'] = [
-            'name' => read_form_value($input, 'name', 150),
-            'email' => read_form_value($input, 'email', 254),
-            'phone' => read_form_value($input, 'phone', 40),
-            'subject' => read_form_value($input, 'subject', 200),
-            'message' => read_form_value($input, 'message', 5000),
+            'name' => read_form_value($input, 'name'),
+            'email' => read_form_value($input, 'email'),
+            'phone' => read_form_value($input, 'phone'),
+            'subject' => read_form_value($input, 'subject'),
+            'message' => read_form_value($input, 'message'),
         ];
 
         if ($state['values']['name'] === '') {
@@ -171,17 +192,17 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
         }
     } elseif ($type === 'service_request') {
         $state['values'] = [
-            'customerName' => read_form_value($input, 'customerName', 150),
-            'customerPhone' => read_form_value($input, 'customerPhone', 40),
-            'customerEmail' => read_form_value($input, 'customerEmail', 254),
-            'serviceType' => read_form_value($input, 'serviceType', 60),
-            'equipmentType' => read_form_value($input, 'equipmentType', 200),
-            'deviceModel' => read_form_value($input, 'deviceModel', 200),
-            'siteLocation' => read_form_value($input, 'siteLocation', 255),
-            'materialNeeds' => read_form_value($input, 'materialNeeds', 10),
-            'issueDescription' => read_form_value($input, 'issueDescription', 5000),
-            'contactMethod' => read_form_value($input, 'contactMethod', 20),
-            'preferredTime' => read_form_value($input, 'preferredTime', 150),
+            'customerName' => read_form_value($input, 'customerName'),
+            'customerPhone' => read_form_value($input, 'customerPhone'),
+            'customerEmail' => read_form_value($input, 'customerEmail'),
+            'serviceType' => read_form_value($input, 'serviceType'),
+            'equipmentType' => read_form_value($input, 'equipmentType'),
+            'deviceModel' => read_form_value($input, 'deviceModel'),
+            'siteLocation' => read_form_value($input, 'siteLocation'),
+            'materialNeeds' => read_form_value($input, 'materialNeeds'),
+            'issueDescription' => read_form_value($input, 'issueDescription'),
+            'contactMethod' => read_form_value($input, 'contactMethod'),
+            'preferredTime' => read_form_value($input, 'preferredTime'),
         ];
 
         if ($state['values']['customerName'] === '') {
@@ -207,6 +228,25 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
         }
     } else {
         throw new InvalidArgumentException('Unsupported form type.');
+    }
+
+    $maxLengths = $type === 'contact'
+        ? ['name' => 150, 'email' => 254, 'phone' => 40, 'subject' => 200, 'message' => 5000]
+        : [
+            'customerName' => 150,
+            'customerPhone' => 40,
+            'customerEmail' => 254,
+            'serviceType' => 60,
+            'equipmentType' => 200,
+            'deviceModel' => 200,
+            'siteLocation' => 255,
+            'materialNeeds' => 10,
+            'issueDescription' => 5000,
+            'contactMethod' => 20,
+            'preferredTime' => 150,
+        ];
+    if (form_values_exceed_limits($state['values'], $maxLengths)) {
+        $state['errors']['general'] = 'One or more fields are too long or contain invalid text. Please review your entries.';
     }
 
     if ($state['errors']) {

@@ -16,7 +16,7 @@ $nav_items = [
     <div class="container">
         <nav class="navbar navbar-expand-lg p-0">
             <a class="navbar-brand" href="index.php">
-                <img class="site-logo" src="assets/images/gravity-hub-logo.png" srcset="<?php echo webp_image_srcset('assets/images/gravity-hub-logo.png'); ?>" alt="Gravity Hub" width="1520" height="652" decoding="async">
+                <img class="site-logo" src="assets/images/gravity-hub-logo.webp" srcset="<?php echo webp_image_srcset('assets/images/gravity-hub-logo.webp'); ?>" alt="Gravity Hub" width="1520" height="652" decoding="async">
             </a>
 
             <button class="navbar-toggler" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mainNav">
