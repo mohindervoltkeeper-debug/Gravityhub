@@ -7,13 +7,20 @@ $body_class = 'page-contact';
 require_once __DIR__ . '/includes/service-data.php';
 require_once __DIR__ . '/includes/form-handler.php';
 
+$phone_countries = phone_country_options();
 $form_state = create_form_state();
+$selected_phone_country = $form_state['values']['phoneCountryCode'] ?? 'IN';
+if (!isset($phone_countries[$selected_phone_country])) {
+    $selected_phone_country = 'IN';
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form_state = form_submission_result('contact', $_POST, []);
+    $selected_phone_country = $form_state['values']['phoneCountryCode'] ?? 'IN';
+    if (!isset($phone_countries[$selected_phone_country])) {
+        $selected_phone_country = 'IN';
+    }
     if (!empty($form_state['saved'])) {
-        $_SESSION['form_success'] = !empty($form_state['notification_sent'])
-            ? 'Your message has been received. Thank you for contacting us.'
-            : 'Your message was saved, but we could not send an email notification. Please contact gravityhubautomation@gmail.com directly.';
+        $_SESSION['form_success'] = 'Message sent successfully.';
         $_SESSION['form_csrf_token'] = bin2hex(random_bytes(32));
         session_regenerate_id(true);
         header('Location: contact.php#contact-form', true, 303);
@@ -62,7 +69,7 @@ include 'includes/header.php';
                     <i class="bi bi-whatsapp"></i>
                     <div>
                         <h4>WhatsApp</h4>
-                        <p><a href="https://wa.me/919983498888" target="_blank">+91 99834 98888</a></p>
+                        <p><a href="https://wa.me/919983498888" target="_blank" rel="noopener">+91 99834 98888</a></p>
                     </div>
                 </div>
 
@@ -98,7 +105,7 @@ include 'includes/header.php';
                 <p style="color: var(--color-text-muted); margin-bottom: var(--space-6);">Describe the equipment, the issue or goal, and any useful context. We will review your message.</p>
 
                 <?php if ($form_state['success'] !== ''): ?>
-                <div class="alert alert-success" role="status"><?php echo htmlspecialchars($form_state['success'], ENT_QUOTES, 'UTF-8'); ?></div>
+                <div class="form-success-toast" data-success-toast role="status" aria-live="polite"><?php echo htmlspecialchars($form_state['success'], ENT_QUOTES, 'UTF-8'); ?></div>
                 <?php endif; ?>
                 <?php if (!empty($form_state['errors']['general'])): ?>
                 <div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($form_state['errors']['general'], ENT_QUOTES, 'UTF-8'); ?></div>
@@ -121,9 +128,17 @@ include 'includes/header.php';
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" class="form-control<?php echo isset($form_state['errors']['phone']) ? ' is-invalid' : ''; ?>" id="phone" name="phone" placeholder="1234567890" maxlength="40" value="<?php echo escape_form_value($form_state, 'phone'); ?>">
-                            <div class="invalid-feedback"><?php echo form_field_error($form_state, 'phone', 'Please enter a valid phone number.'); ?></div>
+                            <label for="phone">Phone number (optional)</label>
+                            <div class="phone-input-group">
+                                <label class="visually-hidden" for="phoneCountryCode">Country calling code</label>
+                                <select class="form-control<?php echo isset($form_state['errors']['phoneCountryCode']) ? ' is-invalid' : ''; ?>" id="phoneCountryCode" name="phoneCountryCode" data-phone-country required>
+                                    <?php foreach ($phone_countries as $country_iso => $country): ?>
+                                    <option value="<?php echo htmlspecialchars($country_iso, ENT_QUOTES, 'UTF-8'); ?>" data-dial-code="<?php echo htmlspecialchars($country['dial_code'], ENT_QUOTES, 'UTF-8'); ?>" data-min-digits="<?php echo (int) $country['min_digits']; ?>" data-max-digits="<?php echo (int) $country['max_digits']; ?>" data-leading-digits="<?php echo htmlspecialchars($country['leading_digits'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"<?php echo $selected_phone_country === $country_iso ? ' selected' : ''; ?>><?php echo htmlspecialchars($country['name'] . ' (' . $country['dial_code'] . ')', ENT_QUOTES, 'UTF-8'); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input type="tel" inputmode="tel" autocomplete="tel-national" data-international-phone class="form-control<?php echo isset($form_state['errors']['phone']) || isset($form_state['errors']['phoneCountryCode']) ? ' is-invalid' : ''; ?>" id="phone" name="phone" placeholder="Phone number" maxlength="18" value="<?php echo escape_form_value($form_state, 'phone'); ?>">
+                                <div class="invalid-feedback"><?php echo htmlspecialchars($form_state['errors']['phoneCountryCode'] ?? $form_state['errors']['phone'] ?? 'Enter a valid phone number for the selected country.', ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="subject">Subject</label>
@@ -144,10 +159,16 @@ include 'includes/header.php';
 
         <section class="contact-map-section reveal" aria-labelledby="contact-map-title">
             <h2 id="contact-map-title">Service Location</h2>
-            <div class="map-placeholder">
-                <span>Service location details will be added once confirmed.</span>
+            <div class="service-location-map">
+                <iframe
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=68.1%2C6.5%2C97.5%2C35.7&amp;layer=mapnik"
+                    title="Map showing India"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen>
+                </iframe>
             </div>
-            <p class="small text-muted">The email, service area, business hours, and map details must be confirmed before publishing.</p>
+            <p class="small text-muted">This map shows India for reference and does not mark a confirmed service address or coverage area. Contact us to confirm availability in your location. Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.</p>
         </section>
     </div>
 </section>

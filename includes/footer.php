@@ -6,10 +6,7 @@
                 <img class="site-logo footer-logo" src="assets/images/gravity-hub-logo.webp" srcset="<?php echo webp_image_srcset('assets/images/gravity-hub-logo.webp'); ?>" alt="Gravity Hub" width="1520" height="652" loading="lazy" decoding="async">
                 <p class="footer-desc">Practical technical services for electrical equipment, energy-monitoring devices, installation, maintenance, and related tasks.</p>
                 <div class="footer-social">
-                    <a href="#!" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                    <a href="#!" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
-                    <a href="#!" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                    <a href="https://www.instagram.com/zypli_" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.instagram.com/zypli_" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
                 </div>
                 <div class="footer-app-downloads" aria-label="App download options">
                     <span class="footer-app-title">Get the app</span>
@@ -54,7 +51,7 @@
                 <h6 class="footer-title">Contact Information</h6>
                 <ul class="footer-list contact-list">
                     <li><i class="bi bi-telephone"></i> <span>Phone: <a href="tel:+919983498888">+91 99834 98888</a></span></li>
-<li><i class="bi bi-whatsapp"></i> <span>WhatsApp: <a href="https://wa.me/919983498888" target="_blank">+91 99834 98888</a></span></li>
+                    <li><i class="bi bi-whatsapp"></i> <span>WhatsApp: <a href="https://wa.me/919983498888" target="_blank" rel="noopener">+91 99834 98888</a></span></li>
                     <li><i class="bi bi-envelope"></i> <span>Email: <a href="mailto:gravityhubautomation@gmail.com">gravityhubautomation@gmail.com</a></span></li>
                     <li><i class="bi bi-geo-alt"></i> <span>Address: To be confirmed</span></li>
                     <li><i class="bi bi-clock"></i> <span>Hours: Contact us to confirm availability</span></li>

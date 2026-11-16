@@ -7,16 +7,23 @@ $body_class = 'page-request-service';
 require_once __DIR__ . '/includes/service-data.php';
 require_once __DIR__ . '/includes/form-handler.php';
 
+$phone_countries = phone_country_options();
 $requested_service = isset($_GET['service']) && is_string($_GET['service']) ? $_GET['service'] : '';
 $service_ids = array_column($services, 'id');
 $preselected_service = in_array($requested_service, $service_ids, true) ? $requested_service : '';
 $form_state = create_form_state();
+$selected_phone_country = $form_state['values']['customerPhoneCountryCode'] ?? 'IN';
+if (!isset($phone_countries[$selected_phone_country])) {
+    $selected_phone_country = 'IN';
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form_state = form_submission_result('service_request', $_POST, $service_ids);
+    $selected_phone_country = $form_state['values']['customerPhoneCountryCode'] ?? 'IN';
+    if (!isset($phone_countries[$selected_phone_country])) {
+        $selected_phone_country = 'IN';
+    }
     if (!empty($form_state['saved'])) {
-        $_SESSION['form_success'] = !empty($form_state['notification_sent'])
-            ? 'Your service request has been received. Thank you.'
-            : 'Your service request was saved, but we could not send an email notification. Please contact gravityhubautomation@gmail.com directly.';
+        $_SESSION['form_success'] = 'Request submitted successfully.';
         $_SESSION['form_csrf_token'] = bin2hex(random_bytes(32));
         session_regenerate_id(true);
         header('Location: request-service.php#request-form', true, 303);
@@ -51,7 +58,7 @@ include 'includes/header.php';
             <p style="color: var(--color-text-muted); margin-bottom: var(--space-6);">The more detail you can share about the equipment and your goal, the easier it is to understand what you need.</p>
 
             <?php if ($form_state['success'] !== ''): ?>
-            <div class="alert alert-success" role="status"><?php echo htmlspecialchars($form_state['success'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="form-success-toast" data-success-toast role="status" aria-live="polite"><?php echo htmlspecialchars($form_state['success'], ENT_QUOTES, 'UTF-8'); ?></div>
             <?php endif; ?>
             <?php if (!empty($form_state['errors']['general'])): ?>
             <div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($form_state['errors']['general'], ENT_QUOTES, 'UTF-8'); ?></div>
@@ -67,8 +74,16 @@ include 'includes/header.php';
                     </div>
                     <div class="form-group">
                         <label for="customerPhone">Phone <span class="text-danger">*</span></label>
-                        <input type="tel" class="form-control<?php echo isset($form_state['errors']['customerPhone']) ? ' is-invalid' : ''; ?>" id="customerPhone" name="customerPhone" placeholder="1234567890" maxlength="40" value="<?php echo escape_form_value($form_state, 'customerPhone'); ?>" required>
-                        <div class="invalid-feedback"><?php echo form_field_error($form_state, 'customerPhone', 'Please enter a valid phone number.'); ?></div>
+                        <div class="phone-input-group">
+                            <label class="visually-hidden" for="customerPhoneCountryCode">Country calling code</label>
+                            <select class="form-control<?php echo isset($form_state['errors']['customerPhoneCountryCode']) ? ' is-invalid' : ''; ?>" id="customerPhoneCountryCode" name="customerPhoneCountryCode" data-phone-country required>
+                                <?php foreach ($phone_countries as $country_iso => $country): ?>
+                                <option value="<?php echo htmlspecialchars($country_iso, ENT_QUOTES, 'UTF-8'); ?>" data-dial-code="<?php echo htmlspecialchars($country['dial_code'], ENT_QUOTES, 'UTF-8'); ?>" data-min-digits="<?php echo (int) $country['min_digits']; ?>" data-max-digits="<?php echo (int) $country['max_digits']; ?>" data-leading-digits="<?php echo htmlspecialchars($country['leading_digits'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"<?php echo $selected_phone_country === $country_iso ? ' selected' : ''; ?>><?php echo htmlspecialchars($country['name'] . ' (' . $country['dial_code'] . ')', ENT_QUOTES, 'UTF-8'); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <input type="tel" inputmode="tel" autocomplete="tel-national" data-international-phone class="form-control<?php echo isset($form_state['errors']['customerPhone']) || isset($form_state['errors']['customerPhoneCountryCode']) ? ' is-invalid' : ''; ?>" id="customerPhone" name="customerPhone" placeholder="Phone number" maxlength="18" value="<?php echo escape_form_value($form_state, 'customerPhone'); ?>" required>
+                            <div class="invalid-feedback"><?php echo htmlspecialchars($form_state['errors']['customerPhoneCountryCode'] ?? $form_state['errors']['customerPhone'] ?? 'Enter a valid phone number for the selected country.', ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
                     </div>
                 </div>
 

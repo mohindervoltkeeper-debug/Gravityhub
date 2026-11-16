@@ -139,7 +139,7 @@ include 'includes/header.php';
     <div class="container">
         <div class="why-grid">
             <div class="why-image reveal apple-blend-dark">
-                <video src="assets/images/photo6-optimized.mp4" poster="assets/images/photo6.webp" autoplay muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">
+                <video src="assets/images/photo6-optimized.mp4?v=<?php echo filemtime(__DIR__ . '/assets/images/photo6-optimized.mp4'); ?>" poster="assets/images/photo6.webp" data-deferred-playback muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">
                     Your browser does not support background video.
                 </video>
             </div>
@@ -320,7 +320,7 @@ include 'includes/header.php';
         <div class="final-cta-buttons">
             <a href="request-service.php" class="btn btn-white">Request a Service</a>
             <a href="contact.php" class="btn btn-white-outline">Contact Us</a>
-            <a href="https://wa.me/919983498888" class="btn btn-white-outline" target="_blank"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+            <a href="https://wa.me/919983498888" class="btn btn-white-outline" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> WhatsApp</a>
         </div>
     </div>
 </section>

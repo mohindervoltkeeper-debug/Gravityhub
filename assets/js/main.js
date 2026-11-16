@@ -11,8 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
   initFaqAccordion();
   initFaqCompactDisplay();
   initFormValidation();
+  initSuccessToast();
   initActiveNav();
   initHeroSlideshow();
+  initDeferredBackgroundVideo();
   initServiceSlider();
   initBlogFilters();
 });
@@ -54,6 +56,37 @@ function initHeroSlideshow() {
       heroContent.classList.add('is-changing');
     }
   }, 5000);
+}
+
+function initDeferredBackgroundVideo() {
+  const videos = document.querySelectorAll('video[data-deferred-playback]');
+  const connection = navigator.connection;
+
+  if (!videos.length
+    || !('IntersectionObserver' in window)
+    || window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    || (connection && connection.saveData)) return;
+
+  const videoObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      const video = entry.target;
+      if (!entry.isIntersecting) {
+        video.pause();
+        return;
+      }
+
+      const playback = video.play();
+      if (playback && typeof playback.catch === 'function') {
+        playback.catch(function (error) {
+          console.warn('EnergyHub background video could not play; the poster remains visible.', error);
+        });
+      }
+    });
+  }, { rootMargin: '150px' });
+
+  videos.forEach(function (video) {
+    videoObserver.observe(video);
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -429,12 +462,35 @@ function initActiveNav() {
 function initFormValidation() {
   const forms = document.querySelectorAll('form[data-validate]');
 
+  function isValidPhoneNumber(field) {
+    const phone = field.value.trim();
+    if (!phone || !/^[0-9\s().-]+$/.test(phone)) return false;
+
+    const phoneGroup = field.closest('.phone-input-group');
+    const countrySelect = phoneGroup && phoneGroup.querySelector('[data-phone-country]');
+    const countryOption = countrySelect && countrySelect.selectedOptions[0];
+    if (!countryOption) return false;
+
+    const digits = phone.replace(/[\s().-]/g, '');
+    if (!/^[0-9]+$/.test(digits)) return false;
+
+    const dialCodeDigits = countryOption.dataset.dialCode.replace(/\D/g, '').length;
+    const maxDigits = Math.min(Number(countryOption.dataset.maxDigits), 15 - dialCodeDigits);
+    const leadingDigits = countryOption.dataset.leadingDigits;
+    return digits.length >= Number(countryOption.dataset.minDigits)
+      && digits.length <= maxDigits
+      && (!leadingDigits || leadingDigits.includes(digits[0]));
+  }
+
   forms.forEach(function (form) {
     function validateField(field, showError) {
       const errorEl = field.parentElement.querySelector('.invalid-feedback');
       const isEmpty = field.required && !field.value.trim();
-      const hasTypeError = field.type === 'email' && field.value.trim() && field.validity.typeMismatch;
-      const isInvalid = isEmpty || hasTypeError;
+      const hasTypeError = field.type === 'email' && field.value.trim() !== '' && field.validity.typeMismatch;
+      const hasPhoneError = field.matches('[data-international-phone]')
+        && field.value.trim() !== ''
+        && !isValidPhoneNumber(field);
+      const isInvalid = isEmpty || hasTypeError || hasPhoneError;
 
       field.classList.toggle('is-invalid', showError && isInvalid);
       if (errorEl) errorEl.style.display = showError && isInvalid ? 'block' : 'none';
@@ -443,9 +499,9 @@ function initFormValidation() {
 
     form.addEventListener('submit', function (e) {
       let isValid = true;
-      const requiredFields = form.querySelectorAll('[required]');
+      const fieldsToValidate = form.querySelectorAll('[required], input[type="email"], [data-international-phone]');
 
-      requiredFields.forEach(function (field) {
+      fieldsToValidate.forEach(function (field) {
         if (!validateField(field, true)) isValid = false;
       });
 
@@ -472,5 +528,24 @@ function initFormValidation() {
         }
       });
     });
+
+    form.querySelectorAll('[data-phone-country]').forEach(function (countrySelect) {
+      countrySelect.addEventListener('change', function () {
+        const phoneGroup = countrySelect.closest('.phone-input-group');
+        const phoneField = phoneGroup && phoneGroup.querySelector('[data-international-phone]');
+        if (phoneField && phoneField.value.trim()) validateField(phoneField, true);
+      });
+    });
+  });
+}
+
+function initSuccessToast() {
+  document.querySelectorAll('[data-success-toast]').forEach(function (toast) {
+    window.setTimeout(function () {
+      toast.classList.add('is-dismissed');
+      window.setTimeout(function () {
+        toast.remove();
+      }, 250);
+    }, 3000);
   });
 }

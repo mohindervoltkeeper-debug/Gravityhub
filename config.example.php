@@ -1,6 +1,8 @@
 <?php
 
 return [
+    // Leave blank locally; set the verified HTTPS origin on the production server.
+    'site_url' => '',
     'database' => [
         // Use "mysql" for Hostinger MySQL/MariaDB, or "pgsql" if your provider offers PostgreSQL.
         'driver' => 'mysql',

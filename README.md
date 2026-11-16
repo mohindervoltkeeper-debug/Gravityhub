@@ -23,11 +23,12 @@ EnergyHub does not promise ready-stock products or instant parts delivery. Scope
 - Working FAQ accordion (vanilla JS)
 - Six shared service categories across the homepage, services page, request form, and footer
 - Editorial blog page with three practical equipment-support guides
+- Contact page with a lazy-loaded India reference map; service availability is confirmed per location
 - Service detail sections with matching image, anchor, request link, required information, and availability notes
 - Footer app download area with inactive Android and iOS placeholders
-- Contact and service-request forms with server-side validation and PDO persistence
-- Responsive WebP image delivery with PNG fallback, lazy-loaded below-the-fold media, and a compressed hero video
-- Search/social metadata and Organization structured data on all pages
+- Contact and service-request forms with country-code selectors, phone validation, and PDO persistence
+- Responsive WebP image delivery, lazy-loaded below-the-fold media, and a compressed hero video
+- Search/social metadata, Organization/WebSite/BlogPosting structured data, robots.txt, and a generated XML sitemap
 - Back-to-top button
 - Reusable PHP includes (header, footer, head, service data)
 - Dynamic copyright year in footer
@@ -48,6 +49,7 @@ energyhubwebsite/
 │   ├── header.php         # Sticky navigation + logo
 │   ├── footer.php         # Footer with links + dynamic year
 │   ├── service-data.php     # Central editable service data
+│   ├── phone-country-data.php # Country calling codes and phone number lengths
 │   ├── database.php         # PDO connection for MySQL/MariaDB or PostgreSQL
 │   └── form-handler.php     # CSRF protection, validation, and form inserts
 ├── database/
@@ -93,7 +95,8 @@ The site includes optimized WebP images and a compressed hero video:
 | `photo11.1.webp`, `photo11.webp` | Contact and final CTA backgrounds |
 | `photo12.webp` | Request a Service hero background |
 | `photo13.webp` | Blog journal masthead background |
-| `gravity-hub-logo.webp`, `gravity-hub-icon.webp` | Site logo and icon |
+| `gravity-hub-logo.webp`, `gravity-hub-icon.webp` | Site logo and source icon artwork |
+| `favicon.ico`, `favicon-48.png`, `apple-touch-icon.png` | Browser/search favicon and Apple home-screen icon |
 
 ## How to Run Locally
 
@@ -119,7 +122,11 @@ The Contact Us and Request a Service forms save submissions in `contact_messages
 
 The forms validate input on the server, use CSRF tokens, and send email notifications through PHP's configured mail transport. A successful database save remains recorded even if notification delivery is unavailable.
 
+Both forms provide a country-code selector (58 supported countries/regions; India is selected by default). The server validates the selected country's number-length rules and stores phone numbers in international `+` format. This checks format and length only; it does not verify that a number is assigned or reachable.
+
 Set the connection values in the root `config.php`. For a fresh setup, copy `config.example.php` to `config.php` and replace the example values with the database details shown by your provider. Keep `config.php` private; it is ignored by Git and direct HTTP access is denied by `.htaccess`. Do not put database credentials in frontend files or commit them.
+
+For this local XAMPP workspace, `config.php` is set to `127.0.0.1:3306`, database `gravityhub`, and MySQL user `root` with an empty password. That local setting was verified against the current XAMPP database only; never upload it to public hosting. Import `database/schema.sql` to create the `contact_messages` and `service_requests` tables.
 
 1. Create a MySQL/MariaDB database and database user in your hosting control panel, and grant that user access to the database.
 2. Import `database/schema.sql` using phpMyAdmin or the hosting database import tool. It creates the two form tables if missing; it does not drop tables or delete existing data.
@@ -133,6 +140,10 @@ Set the connection values in the root `config.php`. For a fresh setup, copy `con
    ```
 
 Database connection errors are written to the PHP error log; the form displays a generic save error without exposing credentials or server details. PostgreSQL connections are supported by the connection code, but this repository does not currently include a PostgreSQL schema.
+
+## Search and social metadata
+
+Each page has a distinct title and description. Blog articles also emit `BlogPosting` and breadcrumb structured data. Canonical URLs, absolute social-card image URLs, and the sitemap's absolute URLs use `ENERGYHUB_SITE_URL` when set; otherwise they use `site_url` from the private `config.php`. Set this to the verified HTTPS origin (scheme and host, no path) on production. Leave it blank locally; do not use `localhost` or a placeholder domain for public SEO metadata. Apache rewrites `/robots.txt` and `/sitemap.xml` to their PHP endpoints; the sitemap returns HTTP 503 until a valid HTTPS origin is configured.
 
 ## What Is Functional Now
 

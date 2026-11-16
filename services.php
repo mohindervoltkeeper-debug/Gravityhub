@@ -134,7 +134,7 @@ include 'includes/header.php';
         <div class="final-cta-buttons">
             <a href="request-service.php" class="btn btn-white btn-lg">Request a Service</a>
             <a href="contact.php" class="btn btn-white-outline btn-lg">Contact Us</a>
-            <a href="https://wa.me/919983498888" class="btn btn-white-outline btn-lg" target="_blank"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+            <a href="https://wa.me/919983498888" class="btn btn-white-outline btn-lg" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> WhatsApp</a>
         </div>
     </div>
 </section>

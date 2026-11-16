@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/phone-country-data.php';
 
 function start_form_session(): void
 {
@@ -62,6 +63,45 @@ function read_form_value(array $input, string $key): string
     }
 
     return trim((string) $value);
+}
+
+function form_has_invalid_field_types(array $input, array $fields): bool
+{
+    foreach ($fields as $field) {
+        if (array_key_exists($field, $input)
+            && !is_string($input[$field])
+            && !is_numeric($input[$field])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function normalize_phone_number(string $phone, string $countryIso): ?string
+{
+    $countries = phone_country_options();
+    $country = $countries[$countryIso] ?? null;
+    if (!is_array($country) || !preg_match('/^[0-9\s().-]+$/D', $phone)) {
+        return null;
+    }
+
+    $nationalNumber = preg_replace('/[\s().-]/', '', $phone);
+    if (!is_string($nationalNumber) || $nationalNumber === '') {
+        return null;
+    }
+
+    $numberLength = strlen($nationalNumber);
+    $dialCodeLength = strlen(preg_replace('/\D/', '', $country['dial_code']));
+    $maximumLength = min($country['max_digits'], 15 - $dialCodeLength);
+    if ($numberLength < $country['min_digits']
+        || $numberLength > $maximumLength
+        || preg_match('/^[0-9]+$/D', $nationalNumber) !== 1
+        || (!empty($country['leading_digits']) && strpos($country['leading_digits'], $nationalNumber[0]) === false)) {
+        return null;
+    }
+
+    return $country['dial_code'] . $nationalNumber;
 }
 
 function form_values_exceed_limits(array $values, array $limits): bool
@@ -169,10 +209,18 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
     }
 
     if ($type === 'contact') {
+        if (form_has_invalid_field_types($input, [
+            'name', 'email', 'phone', 'phoneCountryCode', 'subject', 'message',
+        ])) {
+            $state['errors']['general'] = 'One or more fields have an invalid format. Please review your entries.';
+            return $state;
+        }
+
         $state['values'] = [
             'name' => read_form_value($input, 'name'),
             'email' => read_form_value($input, 'email'),
             'phone' => read_form_value($input, 'phone'),
+            'phoneCountryCode' => read_form_value($input, 'phoneCountryCode'),
             'subject' => read_form_value($input, 'subject'),
             'message' => read_form_value($input, 'message'),
         ];
@@ -183,17 +231,39 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
         if (!filter_var($state['values']['email'], FILTER_VALIDATE_EMAIL)) {
             $state['errors']['email'] = 'Please enter a valid email address.';
         }
+        if (!isset(phone_country_options()[$state['values']['phoneCountryCode']])) {
+            $state['errors']['phoneCountryCode'] = 'Please select a valid country code.';
+        }
         if ($state['values']['phone'] !== ''
-            && !preg_match('/^\+?[0-9\s().-]{7,25}$/D', $state['values']['phone'])) {
-            $state['errors']['phone'] = 'Please enter a valid phone number.';
+            && normalize_phone_number($state['values']['phone'], $state['values']['phoneCountryCode']) === null) {
+            $state['errors']['phone'] = 'Enter a valid phone number for the selected country.';
         }
         if ($state['values']['message'] === '') {
             $state['errors']['message'] = 'Please describe your request.';
         }
     } elseif ($type === 'service_request') {
+        if (form_has_invalid_field_types($input, [
+            'customerName',
+            'customerPhone',
+            'customerPhoneCountryCode',
+            'customerEmail',
+            'serviceType',
+            'equipmentType',
+            'deviceModel',
+            'siteLocation',
+            'materialNeeds',
+            'issueDescription',
+            'contactMethod',
+            'preferredTime',
+        ])) {
+            $state['errors']['general'] = 'One or more fields have an invalid format. Please review your entries.';
+            return $state;
+        }
+
         $state['values'] = [
             'customerName' => read_form_value($input, 'customerName'),
             'customerPhone' => read_form_value($input, 'customerPhone'),
+            'customerPhoneCountryCode' => read_form_value($input, 'customerPhoneCountryCode'),
             'customerEmail' => read_form_value($input, 'customerEmail'),
             'serviceType' => read_form_value($input, 'serviceType'),
             'equipmentType' => read_form_value($input, 'equipmentType'),
@@ -208,8 +278,14 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
         if ($state['values']['customerName'] === '') {
             $state['errors']['customerName'] = 'Please enter your company or name.';
         }
-        if (!preg_match('/^\+?[0-9\s().-]{7,25}$/D', $state['values']['customerPhone'])) {
-            $state['errors']['customerPhone'] = 'Please enter a valid phone number.';
+        if (!isset(phone_country_options()[$state['values']['customerPhoneCountryCode']])) {
+            $state['errors']['customerPhoneCountryCode'] = 'Please select a valid country code.';
+        }
+        if (normalize_phone_number(
+            $state['values']['customerPhone'],
+            $state['values']['customerPhoneCountryCode']
+        ) === null) {
+            $state['errors']['customerPhone'] = 'Enter a valid phone number for the selected country.';
         }
         if (!filter_var($state['values']['customerEmail'], FILTER_VALIDATE_EMAIL)) {
             $state['errors']['customerEmail'] = 'Please enter a valid email address.';
@@ -231,10 +307,18 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
     }
 
     $maxLengths = $type === 'contact'
-        ? ['name' => 150, 'email' => 254, 'phone' => 40, 'subject' => 200, 'message' => 5000]
+        ? [
+            'name' => 150,
+            'email' => 254,
+            'phone' => 18,
+            'phoneCountryCode' => 2,
+            'subject' => 200,
+            'message' => 5000,
+        ]
         : [
             'customerName' => 150,
-            'customerPhone' => 40,
+            'customerPhone' => 18,
+            'customerPhoneCountryCode' => 2,
             'customerEmail' => 254,
             'serviceType' => 60,
             'equipmentType' => 200,
@@ -253,6 +337,12 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
         return $state;
     }
 
+    $phoneField = $type === 'contact' ? 'phone' : 'customerPhone';
+    $phoneCountryField = $type === 'contact' ? 'phoneCountryCode' : 'customerPhoneCountryCode';
+    $normalizedPhone = $state['values'][$phoneField] !== ''
+        ? normalize_phone_number($state['values'][$phoneField], $state['values'][$phoneCountryField])
+        : null;
+
     try {
         $connection = database_connection();
         if ($type === 'contact') {
@@ -263,7 +353,7 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
             $statement->execute([
                 'name' => $state['values']['name'],
                 'email' => $state['values']['email'],
-                'phone' => $state['values']['phone'] ?: null,
+                'phone' => $normalizedPhone,
                 'subject' => $state['values']['subject'] ?: null,
                 'message' => $state['values']['message'],
             ]);
@@ -278,7 +368,7 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
             );
             $statement->execute([
                 'customer_name' => $state['values']['customerName'],
-                'phone' => $state['values']['customerPhone'],
+                'phone' => $normalizedPhone,
                 'email' => $state['values']['customerEmail'],
                 'service_type' => $state['values']['serviceType'],
                 'equipment_type' => $state['values']['equipmentType'] ?: null,
@@ -297,7 +387,9 @@ function form_submission_result(string $type, array $input, array $serviceIds): 
     }
 
     $state['saved'] = true;
-    $state['notification_sent'] = send_form_notification($type, $state['values']);
+    $notificationValues = $state['values'];
+    $notificationValues[$phoneField] = $normalizedPhone ?? '';
+    $state['notification_sent'] = send_form_notification($type, $notificationValues);
     return $state;
 }
 
